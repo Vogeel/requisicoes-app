@@ -7,7 +7,7 @@ import { Router } from '@angular/router';
 @Component({
   selector: 'app-navbar',
   templateUrl: './navbar.component.html',
-  styleUrls: ['./navbar.component.css'],
+  styleUrls: ['./navbar.component.css']
 })
 export class NavbarComponent implements OnInit {
   public usuarioLogado: Observable<firebase.User | null>;
@@ -15,13 +15,15 @@ export class NavbarComponent implements OnInit {
 
   constructor(
     private authService: AuthenticationService,
-    private router: Router
-  ) {}
+    private router: Router,
+  ) { }
 
   ngOnInit(): void {
     this.usuarioLogado = this.authService.usuarioLogado;
   }
+
   public sair() {
-    this.authService.logout().then(() => this.router.navigate(['/login']));
+    this.authService.logout()
+      .then(() => this.router.navigate(['/login']));
   }
 }

@@ -6,45 +6,38 @@ import { LoginGuard } from './auth/services/login.guard';
 import { PainelComponent } from './painel/painel.component';
 
 const routes: Routes = [
-  { path: '', redirectTo: 'login', pathMatch: 'full' },
-  { path: 'login', component: LoginComponent, canActivate:[LoginGuard] },
-  { path: 'painel', component: PainelComponent, canActivate: [AuthGuard] },
+  { path: "", redirectTo: "login", pathMatch: "full" },
+  { path: "login", component: LoginComponent, canActivate: [LoginGuard] },
+  { path: "painel", component: PainelComponent, canActivate: [AuthGuard] },
   {
-    path: 'departamentos',
-    loadChildren: () =>
-      import('./departamentos/departamento.module').then(
-        (m) => m.DepartamentoModule
-      ),
-    canActivate: [AuthGuard],
+    path: "departamentos",
+    loadChildren: () => import("./departamentos/departamento.module")
+      .then(m => m.DepartamentoModule),
+    canActivate: [AuthGuard]
   },
   {
-    path: 'equipamentos',
-    loadChildren: () =>
-      import('./equipamentos/equipamento.module').then(
-        (m) => m.EquipamentoModule
-      ),
-    canActivate: [AuthGuard],
+    path: "equipamentos",
+    loadChildren: () => import("./equipamentos/equipamento.module")
+      .then(m => m.EquipamentoModule),
+    canActivate: [AuthGuard]
+
   },
   {
-    path: 'funcionarios',
-    loadChildren: () =>
-      import('./funcionarios/funcionario.module').then(
-        (m) => m.FuncionarioModule
-      ),
-    canActivate: [AuthGuard],
+    path: "funcionarios",
+    loadChildren: () => import("./funcionarios/funcionario.module")
+      .then(m => m.FuncionarioModule),
+    canActivate: [AuthGuard]
   },
   {
-    path: 'requisicoesFuncionario',
-    loadChildren: () =>
-      import('./requisicoes/requisicoes.module').then(
-        (m) => m.RequisicoesModule
-      ),
-    canActivate: [AuthGuard],
-  },
+    path: "requisicoes",
+    loadChildren: () => import("./requisicoes/requisicao.module")
+      .then(m => m.RequisicaoModule),
+    canActivate: [AuthGuard]
+  }
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule],
+  exports: [RouterModule]
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

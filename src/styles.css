@@ -1,14 +1,16 @@
-.bg-color{
+.bg-color {
   background-color: #dbdbdb !important;
 }
-.bg-light{
-  background-color: #ffff !important;
+
+.bg-light {
+  background-color: #FFFF !important;
 }
 
-.links{
+.links {
   font-size: 17px;
 }
 
-.nav-link:hover{
-  color:#0d4496 !important;
+.nav-link:hover {
+  color: #0d4496 !important;
 }
+

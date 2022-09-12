@@ -1,97 +1,94 @@
 import { Component, OnInit, TemplateRef } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { ToastrService } from 'ngx-toastr';
 import { Observable } from 'rxjs';
-import { Notificador } from '../shared/notificador.service';
-
+import { dataFuturaValidator } from '../shared/validators/data-futura.validator';
 import { Equipamento } from './models/equipamento.model';
 import { EquipamentoService } from './services/equipamento.service';
 
 @Component({
   selector: 'app-equipamento',
-  templateUrl: './equipamento.component.html',
+  templateUrl: './equipamento.component.html'
 })
 export class EquipamentoComponent implements OnInit {
   public equipamentos$: Observable<Equipamento[]>;
   public form: FormGroup;
 
   constructor(
-    private equipamentoService: EquipamentoService,
     private fb: FormBuilder,
     private modalService: NgbModal,
-    private notificador: Notificador
-  ) {}
+    private equipamentoService: EquipamentoService,
+    private toastrService: ToastrService
+  ) { }
 
   ngOnInit(): void {
-    this.equipamentos$ = this.equipamentoService.selecionarTodos();
     this.form = this.fb.group({
-      id: new FormControl(''),
-      numeroSerie: new FormControl(''),
-      nome: new FormControl(''),
-      precoAquisicao: new FormControl(''),
-      dataFabricacao: new FormControl(''),
+      id: new FormControl(""),
+      numeroSerie: new FormControl("", [Validators.required]),
+      nome: new FormControl("", [Validators.required, Validators.minLength(3)]),
+      precoAquisicao: new FormControl("", [Validators.required, Validators.min(0)]),
+      dataFabricacao: new FormControl("", [Validators.required, dataFuturaValidator()]),
     });
+
+    this.equipamentos$ = this.equipamentoService.selecionarTodos();
   }
-  get id() {
-    return this.form.get('id');
-  }
-  get nome() {
-    return this.form.get('nome');
-  }
-  get numeroSerie() {
-    return this.form.get('numeroSerie');
-  }
-  get precoAquisicao() {
-    return this.form.get('precoAquisicao');
-  }
-  get dataFabricacao() {
-    return this.form.get('dataFabricacao');
-  }
+
   get tituloModal(): string {
-    return this.id?.value ? 'Atualização' : 'Cadastro';
+    return this.id?.value ? "Atualização" : "Cadastro";
+  }
+
+  get id(): AbstractControl | null {
+    return this.form.get("id");
+  }
+
+  get numeroSerie(): AbstractControl | null {
+    return this.form.get("numeroSerie");
+  }
+
+  get nome(): AbstractControl | null {
+    return this.form.get("nome");
+  }
+
+  get precoAquisicao(): AbstractControl | null {
+    return this.form.get("precoAquisicao");
+  }
+
+  get dataFabricacao(): AbstractControl | null {
+    return this.form.get("dataFabricacao");
   }
 
   public async gravar(modal: TemplateRef<any>, equipamento?: Equipamento) {
     this.form.reset();
-    if (equipamento) {
+
+    if (equipamento)
       this.form.setValue(equipamento);
-    }
 
     try {
       await this.modalService.open(modal).result;
 
-      if (!equipamento) {
-        await this.equipamentoService.inserir(this.form.value);
-      } else {
-        await this.equipamentoService.editar(this.form.value);
+      if (this.form.dirty && this.form.valid) {
+        if (!equipamento)
+          await this.equipamentoService.inserir(this.form.value)
+        else
+          await this.equipamentoService.editar(this.form.value);
+
+        this.toastrService.success(`O equipamento foi salvo com sucesso!`, "Cadastro de Equipamentos");
       }
-      console.log(`O equipamento foi salvo com sucesso`);
-      this.notificador.notificacaoSucesso(
-        'Cadastro de equipamentos',
-        'Equipamento cadastrado com sucesso!'
-      );
     } catch (error) {
-      console.log(error);
-      if (error !== 0 && error !== 'fechar' && error !== 1) {
-        this.notificador.notificacaoErro(
-          'Cadastro de equipamentos',
-          'Erro ao cadastrar equipamento!'
-        );
-      }
+      if (error != "fechar" && error != "0" && error != "1")
+        this.toastrService.error("Houve um erro ao salvar o equipamento. Tente novamente.", "Cadastro de Equipamentos")
     }
   }
-  public async excluir(registro: Equipamento) {
+
+  public async excluir(equipamento: Equipamento) {
     try {
-      await this.equipamentoService.excluir(registro);
-      this.notificador.notificacaoSucesso(
-        'Exclusão de equipamentos',
-        'Equipamento excluído com sucesso!'
-      );
+      await this.equipamentoService.excluir(equipamento);
+
+      this.toastrService.success(`O equipamento foi excluído com sucesso!`, "Cadastro de Equipamentos");
     } catch (error) {
-      this.notificador.notificacaoErro(
-        'Exclusão de equipamentos',
-        'Erro ao excluir o equipamento!'
-      );
+      this.toastrService.error("Houve um erro ao excluir o equipamento. Tente novamente.", "Cadastro de Equipamentos")
     }
   }
+
 }

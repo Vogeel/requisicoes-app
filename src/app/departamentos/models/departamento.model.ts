@@ -1,5 +1,5 @@
-export class Departamento{
-  id:string;
-  nome:string;
-  telefone:string;
+export class Departamento {
+  id: string;
+  nome: string;
+  telefone: string;
 }
